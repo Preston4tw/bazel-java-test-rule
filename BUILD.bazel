@@ -1,0 +1,45 @@
+load(":lines.bzl", "line_count_matches_parity_test")
+
+java_binary(
+    name = "count_lines",
+    srcs = ["CountLines.java"],
+    main_class = "CountLines",
+    deps = [
+        "@maven//:com_google_guava_guava",
+    ]
+)
+
+filegroup(
+    name = "g1",
+    srcs = glob([
+        "**/*.txt",
+        "*.java"
+        ],
+        exclude = ["bazel-*/**"],
+    ),
+)
+
+java_test(
+    name = "tlines",
+    size = "small",
+    args = [
+        "odd",
+        "$(locations :g1)",
+    ],
+    runtime_deps = [
+        ":count_lines",
+    ],
+    main_class = "CountLines",
+    data = [
+        ":g1",
+    ],
+    test_class = "CountLines",
+)
+
+line_count_matches_parity_test(
+    name = "tlines_macro",
+    parity = "odd",
+    srcs = [
+        ":g1",
+    ],
+)
